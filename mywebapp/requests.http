@@ -1,0 +1,51 @@
+@host = http://localhost:5000
+
+### /health/alive (always 200 OK)
+GET {{host}}/health/alive
+
+### /health/ready (200 OK if DB connected)
+GET {{host}}/health/ready
+
+
+### List of endpoints
+GET {{host}}/
+Accept: text/html
+
+
+### Create a new item
+POST {{host}}/items
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Lenovo ThinkPad",
+  "quantity": 10
+}
+
+### Create a new item
+POST {{host}}/items
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Logitech mouse",
+  "quantity": 25
+}
+
+
+### Item list in json
+GET {{host}}/items
+Accept: application/json
+
+### Item list in html table
+GET {{host}}/items
+Accept: text/html
+
+
+### Item details json
+GET {{host}}/items/1
+Accept: application/json
+
+### Item details json html
+GET {{host}}/items/1
+Accept: text/html

@@ -18,8 +18,8 @@ public class ItemService {
         return itemRepository.findAll().stream().map(this::mapToDto).toList();
     }
 
-    public void createNewItem(CreateItemDto newItem) {
-        itemRepository.save(Item.builder()
+    public Item createNewItem(CreateItemDto newItem) {
+        return itemRepository.save(Item.builder()
                 .name(newItem.name())
                 .quantity(newItem.quantity())
                 .build());

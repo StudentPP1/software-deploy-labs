@@ -11,24 +11,12 @@ cp build/libs/*-SNAPSHOT.jar /opt/mywebapp/mywebapp.jar
 chown -R mywebapp:mywebapp /opt/mywebapp
 chmod 500 /opt/mywebapp/mywebapp.jar
 
-echo "7. Configuring Systemd and Socket Activation"
-# Create the socket file
-cat <<EOF > /etc/systemd/system/mywebapp.socket
-[Unit]
-Description=MyWebApp Socket
-
-[Socket]
-ListenStream=5000
-
-[Install]
-WantedBy=sockets.target
-EOF
+echo "7. Configuring Systemd"
 
 # Create the service file
 cat <<EOF > /etc/systemd/system/mywebapp.service
 [Unit]
 Description=MyWebApp Service
-Requires=mywebapp.socket
 After=network.target mariadb.service
 
 [Service]
@@ -42,7 +30,12 @@ SuccessExitStatus=143
 WantedBy=multi-user.target
 EOF
 
-# Apply systemd changes and start the socket
+# Kill old stuck socket if exists
+systemctl stop mywebapp.socket 2>/dev/null || true
+systemctl disable mywebapp.socket 2>/dev/null || true
+rm -f /etc/systemd/system/mywebapp.socket
+
+# Apply systemd changes and start the service
 systemctl daemon-reload
-systemctl enable --now mywebapp.socket
+systemctl enable --now mywebapp.service
 systemctl restart mywebapp.service

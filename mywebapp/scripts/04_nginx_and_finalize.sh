@@ -21,11 +21,10 @@ ln -sf /etc/nginx/sites-available/mywebapp /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 systemctl reload nginx
 
-echo "9. Create gradebook"
+echo "9. Create grade book"
 echo "14" > /home/student/gradebook
 chown student:student /home/student/gradebook
 
 echo "10. Lock default system user"
 # Prevent login for standard cloud image users
 usermod -L ubuntu 2>/dev/null || true
-usermod -L vagrant 2>/dev/null || true

@@ -40,9 +40,3 @@ cat <<EOF > /etc/sudoers.d/operator-rules
 operator ALL=(ALL) NOPASSWD: /bin/systemctl start mywebapp.service, /bin/systemctl stop mywebapp.service, /bin/systemctl restart mywebapp.service, /bin/systemctl status mywebapp.service, /bin/systemctl reload nginx
 EOF
 chmod 0440 /etc/sudoers.d/operator-rules
-
-echo "3. Config rights for operator"
-cat <<EOF > /etc/sudoers.d/operator-rules
-operator ALL=(ALL) NOPASSWD: /bin/systemctl start mywebapp.service, /bin/systemctl stop mywebapp.service, /bin/systemctl restart mywebapp.service, /bin/systemctl status mywebapp.service, /bin/systemctl reload nginx
-EOF
-chmod 0440 /etc/sudoers.d/operator-rules

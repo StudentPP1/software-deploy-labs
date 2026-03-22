@@ -30,7 +30,7 @@ SuccessExitStatus=143
 WantedBy=multi-user.target
 EOF
 
-# Kill old stuck socket if exists
+# Kill old socket if exists
 systemctl stop mywebapp.socket 2>/dev/null || true
 systemctl disable mywebapp.socket 2>/dev/null || true
 rm -f /etc/systemd/system/mywebapp.socket

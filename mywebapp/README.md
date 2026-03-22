@@ -1,3 +1,6 @@
+# Simple inventory service
+Project to understand how to deploy without docker
+
 # Variables
 + Variant: 14 (V2 = 1, V3 = 3, V5 = 5)
 + Web-app: Simple Inventory
@@ -13,6 +16,47 @@ docker-compose up -d
 ```bash
 ./gradlew bootRun --args="--server.port=5000 --spring.datasource.url=jdbc:mariadb://localhost:3306/simple_inventory --spring.datasource.username=root --spring.datasource.password=root --spring.datasource.driver-class-name=org.mariadb.jdbc.Driver"
 ```
+
+# Linux run app
++ Use ubuntu [image](https://ubuntu.com/download/server)
+
++ Clone repo
+```bash
+git clone https://github.com/StudentPP1/software-deploy-labs.git
+```
+
++ Go to project folder
+```bash
+cd software-deploy-labs
+cd mywebapp
+```
+
++ Run script
+```bash
+sudo bash setup.sh
+```
+
+# API 
+````http request
+# list of items (id, name)
+GET /items
+###
+
+# create a new item
+POST /items 
+###
+
+# item details by id
+GET /items/<id> 
+###
+
+# Return OK if app run
+GET /health/alive
+###
+
+# Return OK if db connected
+GET /health/ready
+````
 
 # Testing
 Run these commands from the virtual machine terminal to verify the deployment, network restrictions, and user permissions.

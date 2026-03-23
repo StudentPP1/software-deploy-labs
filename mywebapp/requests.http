@@ -1,4 +1,4 @@
-@host = http://localhost:5000
+@host = http://localhost
 
 ### /health/alive (always 200 OK)
 GET {{host}}/health/alive

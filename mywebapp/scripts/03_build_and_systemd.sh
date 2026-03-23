@@ -18,6 +18,7 @@ echo "7. Configuring Systemd"
 # Create the service file (config to auto run)
 # After=network.target mariadb.service: run after we have network & db
 # WantedBy=multi-user.target: After server is available to work it's run mywebapp.service
+# SuccessExitStatus=143: when java stop service to restart it will return 15, linux add 128 => 143 success stop
 cat <<EOF > /etc/systemd/system/mywebapp.service
 [Unit]
 Description=MyWebApp Service

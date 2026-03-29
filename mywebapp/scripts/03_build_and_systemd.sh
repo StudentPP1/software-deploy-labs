@@ -36,7 +36,7 @@ cat <<EOF > /etc/systemd/system/mywebapp.service
 [Unit]
 Description=MyWebApp Service
 After=network.target mariadb.service
-Requires=mywebapp.socket
+Wants=mywebapp.socket
 
 [Service]
 User=app

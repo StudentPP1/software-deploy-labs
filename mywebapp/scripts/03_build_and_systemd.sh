@@ -17,6 +17,7 @@ echo "7. Configuring Systemd"
 
 systemctl stop mywebapp.service 2>/dev/null || true
 systemctl stop mywebapp.socket 2>/dev/null || true
+systemctl disable mywebapp.socket 2>/dev/null || true
 
 # Socket activation is not supported by Spring Boot out of the box
 # /etc/systemd/system/mywebapp.socket

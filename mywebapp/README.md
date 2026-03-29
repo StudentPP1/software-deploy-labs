@@ -115,7 +115,7 @@ sudo passwd -S ubuntu
 ps -o user,pid,cmd -C java
 ```
 
-+ Verify the automation script created the gradebook 
++ Verify the automation script created the grade book 
 ```bash
 sudo cat /home/student/gradebook
 ```

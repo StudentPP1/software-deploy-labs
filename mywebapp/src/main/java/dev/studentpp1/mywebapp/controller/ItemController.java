@@ -60,7 +60,7 @@ public class ItemController {
         html.append("<h3>").append(item.getId()).append("</h3>");
         html.append("<h3>").append(item.getName()).append("</h3>");
         html.append("<h3>").append(item.getQuantity()).append("</h3>");
-        html.append("<h3>").append(item.getCreatedAt()).append("</h3>");
+        html.append("<h3>").append(item.getCreated_at()).append("</h3>");
         html.append("</body></html>");
         return html.toString();
     }

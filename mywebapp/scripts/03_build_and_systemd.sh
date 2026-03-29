@@ -15,6 +15,10 @@ chmod 500 /opt/mywebapp/mywebapp.jar
 
 echo "7. Configuring Systemd"
 
+systemctl stop mywebapp.service 2>/dev/null || true
+systemctl stop mywebapp.socket 2>/dev/null || true
+
+# Socket activation is not supported by Spring Boot out of the box
 # /etc/systemd/system/mywebapp.socket
 cat <<EOF > /etc/systemd/system/mywebapp.socket
 [Unit]
@@ -36,7 +40,6 @@ cat <<EOF > /etc/systemd/system/mywebapp.service
 [Unit]
 Description=MyWebApp Service
 After=network.target mariadb.service
-Wants=mywebapp.socket
 
 [Service]
 User=app
@@ -50,6 +53,4 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload # reload daemon to clean start service
-# systemctl enable --now mywebapp.socket -> prevent port conflict with spring app
 systemctl enable --now mywebapp.service # run service
-systemctl restart mywebapp.service # restart to pull new app config

@@ -36,10 +36,10 @@ echo "operator:12345678" | chpasswd
 chage -d 0 operator
 
 # Create system user if not exists
-if ! id "mywebapp" &>/dev/null; then
+if ! id "app" &>/dev/null; then
     # -r: create system user (only for services)
     # -s /usr/sbin/nologin: disable forward login
-    useradd -r -s /usr/sbin/nologin mywebapp
+    useradd -r -s /usr/sbin/nologin app
 fi
 
 echo "3. Config rights for operator"

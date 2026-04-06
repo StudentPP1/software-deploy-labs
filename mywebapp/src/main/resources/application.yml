@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: mywebapp
+  datasource:
+    url: jdbc:mariadb://localhost:3306/simple_inventory
+    username: root
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+server:
+  port: 5000

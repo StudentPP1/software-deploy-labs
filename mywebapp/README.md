@@ -8,11 +8,12 @@ Project to understand how to deploy without docker
 + App port: 5000
 + Database: MariaDB
 
-# Local run app
+# Run app via docker-compose
 ```bash
 docker-compose up -d
 ```
 
+# Local run 
 ```bash
 ./gradlew bootRun --args="--server.port=5000 --spring.datasource.url=jdbc:mariadb://localhost:3306/simple_inventory --spring.datasource.username=root --spring.datasource.password=root --spring.datasource.driver-class-name=org.mariadb.jdbc.Driver"
 ```

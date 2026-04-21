@@ -105,10 +105,8 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            # push to main branch → latest + sha-<full-hash>
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=sha,format=long,prefix=sha-,enable=${{ github.ref == 'refs/heads/main' }}
-            # annotated tag push → stable + tag value (e.g. v1.2.3)
             type=raw,value=stable,enable=${{ startsWith(github.ref, 'refs/tags/') }}
             type=ref,event=tag,enable=${{ startsWith(github.ref, 'refs/tags/') }}
 

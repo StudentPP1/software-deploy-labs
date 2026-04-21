@@ -27,22 +27,23 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Checkstyle - Java source
+        working-directory: mywebapp
         run: ./gradlew checkstyleMain checkstyleTest
 
       - name: Hadolint - Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: Dockerfile
+          dockerfile: mywebapp/Dockerfile
 
       - name: ShellCheck - shell scripts
         uses: ludeeus/action-shellcheck@master
         with:
-          scandir: '.'
+          scandir: './mywebapp/scripts'
 
       - name: Yamllint - YAML files
         uses: ibiqlik/action-yamllint@v3
         with:
-          file_or_dir: docker-compose.yml src/main/resources/application.yml .github/workflows/
+          file_or_dir: mywebapp/docker-compose.yml mywebapp/src/main/resources/application.yml .github/workflows/
           config_data: |
             extends: default
             rules:
@@ -69,6 +70,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run tests with coverage
+        working-directory: mywebapp
         run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
 
       - name: Upload coverage report artifact
@@ -76,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: build/reports/jacoco/test/html/
+          path: mywebapp/build/reports/jacoco/test/html/
           retention-days: 30
 
   build-and-push:
@@ -119,7 +121,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: mywebapp
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
     id 'org.springframework.boot' version '4.0.4'
     id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -35,8 +36,22 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.flywaydb:flyway-core'
+    testImplementation 'com.h2database:h2'
+    testImplementation 'org.mockito:mockito-core:5.3.1'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// ./gradlew jacocoTestCoverageVerification
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.40
+            }
+        }
+    }
 }

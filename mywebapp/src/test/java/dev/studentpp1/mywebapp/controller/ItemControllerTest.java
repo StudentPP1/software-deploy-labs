@@ -1,13 +1,10 @@
 package dev.studentpp1.mywebapp.controller;
 
-import dev.studentpp1.mywebapp.dto.CreateItemDto;
 import dev.studentpp1.mywebapp.dto.ItemResponseDto;
 import dev.studentpp1.mywebapp.entity.Item;
 import dev.studentpp1.mywebapp.repository.ItemRepository;
 import dev.studentpp1.mywebapp.service.ItemService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -23,7 +20,9 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -40,20 +39,20 @@ class ItemControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private static final List<Item> items = new ArrayList<>();
-    private static final List<ItemResponseDto> dtos = new ArrayList<>();
+    private static final List<Item> ITEMS = new ArrayList<>();
+    private static final List<ItemResponseDto> DTOS = new ArrayList<>();
 
     @BeforeAll
     static void setUp() {
-        items.add(new Item(1L, "test1", 10, LocalDateTime.now()));
-        items.add(new Item(2L, "test2", 20, LocalDateTime.now().plusMinutes(1)));
-        dtos.add(new ItemResponseDto(1L, "test1"));
-        dtos.add(new ItemResponseDto(2L, "test2"));
+        ITEMS.add(new Item(1L, "test1", 10, LocalDateTime.now()));
+        ITEMS.add(new Item(2L, "test2", 20, LocalDateTime.now().plusMinutes(1)));
+        DTOS.add(new ItemResponseDto(1L, "test1"));
+        DTOS.add(new ItemResponseDto(2L, "test2"));
     }
 
     @Test
     void getItemsJson() throws Exception {
-        when(itemRepository.findAll()).thenReturn(items);
+        when(itemRepository.findAll()).thenReturn(ITEMS);
 
         mockMvc.perform(get("/items").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -68,7 +67,7 @@ class ItemControllerTest {
 
     @Test
     void getItemsHtml() throws Exception {
-        when(itemRepository.findAll()).thenReturn(items);
+        when(itemRepository.findAll()).thenReturn(ITEMS);
 
         mockMvc.perform(get("/items").accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
@@ -82,7 +81,7 @@ class ItemControllerTest {
 
     @Test
     void createItem() throws Exception {
-        Item item = items.getFirst();
+        Item item = ITEMS.getFirst();
         when(itemRepository.save(any())).thenReturn(item);
 
         mockMvc.perform(post("/items")
@@ -100,7 +99,7 @@ class ItemControllerTest {
 
     @Test
     void getItemJson() throws Exception {
-        Item item = items.getFirst();
+        Item item = ITEMS.getFirst();
         Long id = item.getId();
         when(itemRepository.findById(id)).thenReturn(Optional.of(item));
 
@@ -116,7 +115,7 @@ class ItemControllerTest {
 
     @Test
     void getItemHtml() throws Exception {
-        Item item = items.getFirst();
+        Item item = ITEMS.getFirst();
         Long id = item.getId();
         when(itemRepository.findById(id)).thenReturn(Optional.of(item));
 

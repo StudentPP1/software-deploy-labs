@@ -17,7 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceTest {
@@ -28,29 +31,29 @@ class ItemServiceTest {
     @InjectMocks
     private ItemService itemService;
 
-    private static final List<Item> items = new ArrayList<>();
-    private static final List<ItemResponseDto> dtos = new ArrayList<>();
+    private static final List<Item> ITEMS = new ArrayList<>();
+    private static final List<ItemResponseDto> DTOS = new ArrayList<>();
 
     @BeforeAll
     static void setUp() {
-        items.add(new Item(1L, "test1", 10, LocalDateTime.now()));
-        items.add(new Item(2L, "test2", 20, LocalDateTime.now().plusMinutes(1)));
-        dtos.add(new ItemResponseDto(1L, "test1"));
-        dtos.add(new ItemResponseDto(2L, "test2"));
+        ITEMS.add(new Item(1L, "test1", 10, LocalDateTime.now()));
+        ITEMS.add(new Item(2L, "test2", 20, LocalDateTime.now().plusMinutes(1)));
+        DTOS.add(new ItemResponseDto(1L, "test1"));
+        DTOS.add(new ItemResponseDto(2L, "test2"));
     }
 
     @Test
     void getItemList() {
-        when(itemRepository.findAll()).thenReturn(items);
+        when(itemRepository.findAll()).thenReturn(ITEMS);
         List<ItemResponseDto> response = itemService.getItemList();
         verify(itemRepository, times(1)).findAll();
-        Assertions.assertEquals(dtos, response);
+        Assertions.assertEquals(DTOS, response);
     }
 
     @Test
     void createNewItem() {
         CreateItemDto createItemDto = new CreateItemDto("test1", 10);
-        Item item = items.getFirst();
+        Item item = ITEMS.getFirst();
         when(itemRepository.save(any())).thenReturn(item);
         Item response = itemService.createNewItem(createItemDto);
         verify(itemRepository, times(1)).save(any());
@@ -59,7 +62,7 @@ class ItemServiceTest {
 
     @Test
     void getItemById() {
-        Item item = items.getFirst();
+        Item item = ITEMS.getFirst();
         Long id = item.getId();
         when(itemRepository.findById(id)).thenReturn(Optional.of(item));
         Item response = itemService.getItemById(id);

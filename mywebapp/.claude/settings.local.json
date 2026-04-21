@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat /e/FICE/2course/software-deploy/mywebapp/scripts/*.sh)",
+      "Bash(./gradlew checkstyleMain checkstyleTest)",
+      "Bash(./gradlew test:*)"
+    ]
+  }
+}

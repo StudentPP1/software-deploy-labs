@@ -10,9 +10,9 @@ services:
       - ./db_data:/var/lib/mysql
     networks:
       - backend
-    # healthcheck copy from: https://mariadb.com/docs/server/server-management/automated-mariadb-deployment-and-administration/docker-and-mariadb/using-healthcheck-sh
+    # healthcheck: https://mariadb.com/docs/server/server-management/automated-mariadb-deployment-and-administration/
     healthcheck:
-      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 10s
       interval: 10s
       timeout: 5s
@@ -35,7 +35,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: [ "CMD", "curl", "http://localhost:5000/health/ready" ]
+      test: ["CMD", "curl", "http://localhost:5000/health/ready"]
       start_period: 15s
       interval: 10s
       timeout: 5s

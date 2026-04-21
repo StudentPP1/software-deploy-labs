@@ -7,6 +7,7 @@ RUN gradle bootJar -x test
 
 FROM eclipse-temurin:25-jre-alpine
 
+# hadolint ignore=DL3018
 RUN apk add --no-cache curl
 
 WORKDIR /mywebapp

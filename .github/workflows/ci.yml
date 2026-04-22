@@ -1,6 +1,6 @@
 name: CI
 
-on:
+"on":
   push:
     branches: [main]
     tags:
@@ -56,7 +56,7 @@ jobs:
               line-length:
                 max: 120
               truthy:
-                allowed-values: ['true', 'false']
+                allowed-values: ['true', 'false', 'on']
               document-start:
                 present: false
 

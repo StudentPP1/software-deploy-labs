@@ -147,33 +147,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH key
-        run: |
-          mkdir -p /home/admin/.ssh
-          cp /home/admin/.ssh/runner_key /home/admin/.ssh/id_ed25519 2>/dev/null || true
-          chmod 700 /home/admin/.ssh
-          chmod 600 /home/admin/.ssh/id_ed25519
-
       - name: Copy configs to target node
         run: |
-          ssh -i /home/admin/.ssh/id_ed25519 \
+          ssh -i /opt/actions-runner/deploy_key \
             -o StrictHostKeyChecking=no \
             ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} \
             "mkdir -p /opt/mywebapp/nginx"
 
-          scp -i /home/admin/.ssh/id_ed25519 \
+          scp -i /opt/actions-runner/deploy_key \
             -o StrictHostKeyChecking=no \
             mywebapp/nginx/default.conf \
             ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/mywebapp/nginx/default.conf
 
-          scp -i /home/admin/.ssh/id_ed25519 \
+          scp -i /opt/actions-runner/deploy_key \
             -o StrictHostKeyChecking=no \
             mywebapp/docker-compose.prod.yml \
             ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/mywebapp/docker-compose.prod.yml
 
       - name: Deploy via SSH
         run: |
-          ssh -i /home/admin/.ssh/id_ed25519 \
+          ssh -i /opt/actions-runner/deploy_key \
             -o StrictHostKeyChecking=no \
             ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} \
             bash -s << 'ENDSSH'
@@ -198,7 +191,7 @@ jobs:
     steps:
       - name: Verify Deployment
         run: |
-          ssh -i /home/admin/.ssh/id_ed25519 \
+          ssh -i /opt/actions-runner/deploy_key \
             -o StrictHostKeyChecking=no \
             ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} \
             bash -s << 'ENDSSH'

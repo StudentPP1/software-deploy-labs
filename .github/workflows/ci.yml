@@ -250,7 +250,8 @@ jobs:
             fi
 
             echo "[7/7] Checking nginx access log is being written..."
-            LOG_LINES=$(docker exec nginx sh -c "wc -l < /var/log/nginx/mywebapp_access.log 2>/dev/null || echo 0")
+            LOG_LINES=$(docker exec mywebapp-nginx-1 \
+              sh -c "wc -l < /var/log/nginx/mywebapp_access.log 2>/dev/null || echo 0")
             if [ "$LOG_LINES" -gt 0 ]; then
               echo "     OK: nginx access log has ${LOG_LINES} lines"
             else

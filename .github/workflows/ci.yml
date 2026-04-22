@@ -147,6 +147,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup SSH key
+        run: |
+          mkdir -p /home/admin/.ssh
+          cp /home/admin/.ssh/runner_key /home/admin/.ssh/id_ed25519 2>/dev/null || true
+          chmod 700 /home/admin/.ssh
+          chmod 600 /home/admin/.ssh/id_ed25519
+
       - name: Copy configs to target node
         run: |
           ssh -i /home/admin/.ssh/id_ed25519 \

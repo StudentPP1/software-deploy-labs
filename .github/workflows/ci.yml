@@ -59,8 +59,7 @@ jobs:
                 allowed-values: ['true', 'false', 'on']
               document-start:
                 present: false
-              new-line-at-end-of-file:
-                present: false
+              new-line-at-end-of-file: disable
 
   test:
     name: Tests & Coverage

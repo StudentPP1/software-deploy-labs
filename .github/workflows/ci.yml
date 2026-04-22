@@ -161,7 +161,6 @@ jobs:
           host: ${{ secrets.TARGET_HOST }}
           username: ${{ secrets.TARGET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          key_format: base64
           script: |
             set -e
 
@@ -201,7 +200,6 @@ jobs:
           host: ${{ secrets.TARGET_HOST }}
           username: ${{ secrets.TARGET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          key_format: base64
           script: |
             set -e
 

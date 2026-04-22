@@ -183,8 +183,8 @@ jobs:
 
             cd /opt/mywebapp
             docker compose pull mywebapp
-            sudo systemctl stop mywebapp || true
-            sudo systemctl start mywebapp
+            docker compose down || true
+            docker compose up -d
 
             echo "Waiting for containers to start..."
             sleep 20

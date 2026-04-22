@@ -165,6 +165,8 @@ jobs:
             set -e
 
             mkdir -p /opt/mywebapp/nginx
+            mkdir -p ~/.docker
+            echo '{"auths":{}}' > ~/.docker/config.json
 
             echo "${{ steps.configs.outputs.nginx_b64 }}" \
               | base64 -d > /opt/mywebapp/nginx/default.conf
@@ -175,7 +177,8 @@ jobs:
             echo "${{ secrets.GHCR_TOKEN }}" \
               | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-            echo "MYWEBAPP_IMAGE=ghcr.io/${{ github.repository }}:${{ github.ref_name }}" \
+            REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            echo "MYWEBAPP_IMAGE=ghcr.io/${REPO}:${{ github.ref_name }}" \
               > /opt/mywebapp/.env
 
             cd /opt/mywebapp
@@ -185,7 +188,7 @@ jobs:
             echo "Waiting for containers to start..."
             sleep 20
 
-            echo "Deploy done: ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
+            echo "Deploy done: ghcr.io/${REPO}:${{ github.ref_name }}"
 
   verify:
     name: Verify Deployment

@@ -45,7 +45,11 @@ jobs:
       - name: Yamllint - YAML files
         uses: ibiqlik/action-yamllint@v3
         with:
-          file_or_dir: mywebapp/docker-compose.yml mywebapp/src/main/resources/application.yml .github/workflows/
+          file_or_dir: >-
+            mywebapp/docker-compose.yml
+            mywebapp/docker-compose.prod.yml
+            mywebapp/src/main/resources/application.yml
+            .github/workflows/
           config_data: |
             extends: default
             rules:
@@ -84,7 +88,6 @@ jobs:
           name: coverage-report
           path: mywebapp/build/reports/jacoco/test/html/
           retention-days: 30
-
   build-and-push:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
@@ -129,3 +132,92 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+  deploy:
+    name: Deploy to Target Node
+    runs-on: self-hosted
+    needs: [build-and-push]
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Copy configs to target node
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.TARGET_HOST }}
+          username: ${{ secrets.TARGET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "mywebapp/nginx/default.conf,mywebapp/docker-compose.prod.yml"
+          target: "/opt"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.TARGET_HOST }}
+          username: ${{ secrets.TARGET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+
+            cd /opt/mywebapp
+
+            mv docker-compose.prod.yml docker-compose.yml
+
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+            export MYWEBAPP_IMAGE="ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
+
+            echo "MYWEBAPP_IMAGE=${MYWEBAPP_IMAGE}" > .env
+
+            docker compose pull mywebapp
+            systemctl restart mywebapp
+
+            echo "Deploy done: ${MYWEBAPP_IMAGE}"
+
+
+  verify:
+    name: Verify Deployment
+    runs-on: self-hosted
+    needs: [deploy]
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Verify via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.TARGET_HOST }}
+          username: ${{ secrets.TARGET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+
+            echo "[1/4] Checking systemd service is active..."
+            systemctl is-active --quiet mywebapp \
+              && echo "     OK: mywebapp.service is active" \
+              || { echo "     FAIL: mywebapp.service is not active"; systemctl status mywebapp; exit 1; }
+
+            echo "[2/4] Checking all containers are running..."
+            for container in mariadb_db mywebapp nginx; do
+              docker ps --filter "name=${container}" --filter "status=running" | grep -q "${container}" \
+                && echo "     OK: ${container} is running" \
+                || { echo "     FAIL: ${container} is not running"; docker ps -a; exit 1; }
+            done
+
+            echo "[3/4] Checking app health endpoint..."
+            curl --silent --fail --max-time 15 \
+              http://localhost:5000/health/ready \
+              && echo "     OK: /health/ready responded" \
+              || { echo "     FAIL: /health/ready not responding"; exit 1; }
+
+            echo "[4/4] Checking nginx proxies correctly..."
+            HTTP_CODE=$(curl --silent --output /dev/null --write-out "%{http_code}" \
+              --max-time 10 http://localhost:80/)
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
+              echo "     OK: nginx returns HTTP ${HTTP_CODE}"
+            else
+              echo "     FAIL: nginx returned HTTP ${HTTP_CODE}"
+              exit 1
+            fi
+
+            echo "All checks passed!"

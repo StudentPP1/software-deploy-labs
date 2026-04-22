@@ -147,23 +147,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Copy configs to target node
+      - name: Encode configs to base64
+        id: configs
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} \
-            "mkdir -p /opt/mywebapp/nginx"
-          scp -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            mywebapp/nginx/default.conf \
-            ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/mywebapp/nginx/default.conf
-          scp -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            mywebapp/docker-compose.prod.yml \
-            ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/mywebapp/docker-compose.prod.yml
+          NGINX_B64=$(base64 -w 0 mywebapp/nginx/default.conf)
+          COMPOSE_B64=$(base64 -w 0 mywebapp/docker-compose.prod.yml)
+          echo "nginx_b64=${NGINX_B64}" >> "$GITHUB_OUTPUT"
+          echo "compose_b64=${COMPOSE_B64}" >> "$GITHUB_OUTPUT"
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -173,15 +163,22 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            cd /opt/mywebapp
 
-            mv docker-compose.prod.yml docker-compose.yml
+            mkdir -p /opt/mywebapp/nginx
+
+            echo "${{ steps.configs.outputs.nginx_b64 }}" \
+              | base64 -d > /opt/mywebapp/nginx/default.conf
+
+            echo "${{ steps.configs.outputs.compose_b64 }}" \
+              | base64 -d > /opt/mywebapp/docker-compose.yml
 
             echo "${{ secrets.GHCR_TOKEN }}" \
               | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-            echo "MYWEBAPP_IMAGE=ghcr.io/${{ github.repository }}:${{ github.ref_name }}" > .env
+            echo "MYWEBAPP_IMAGE=ghcr.io/${{ github.repository }}:${{ github.ref_name }}" \
+              > /opt/mywebapp/.env
 
+            cd /opt/mywebapp
             docker compose pull mywebapp
             systemctl restart mywebapp
 

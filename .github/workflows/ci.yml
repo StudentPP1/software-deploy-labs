@@ -161,6 +161,7 @@ jobs:
           host: ${{ secrets.TARGET_HOST }}
           username: ${{ secrets.TARGET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key_format: base64
           script: |
             set -e
 
@@ -180,7 +181,7 @@ jobs:
 
             cd /opt/mywebapp
             docker compose pull mywebapp
-            systemctl restart mywebapp
+            sudo systemctl restart mywebapp
 
             echo "Waiting for containers to start..."
             sleep 20
@@ -200,13 +201,14 @@ jobs:
           host: ${{ secrets.TARGET_HOST }}
           username: ${{ secrets.TARGET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key_format: base64
           script: |
             set -e
 
             echo "[1/7] Checking systemd service is active..."
-            systemctl is-active --quiet mywebapp \
+            sudo systemctl is-active --quiet mywebapp \
               && echo "     OK: mywebapp.service is active" \
-              || { echo "     FAIL: mywebapp.service is not active"; systemctl status mywebapp; exit 1; }
+              || { echo "     FAIL: mywebapp.service is not active"; sudo systemctl status mywebapp; exit 1; }
 
             echo "[2/7] Checking all containers are running..."
             for container in mariadb_db mywebapp nginx; do

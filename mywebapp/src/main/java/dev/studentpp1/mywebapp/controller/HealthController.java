@@ -16,6 +16,8 @@ import java.sql.Connection;
 public class HealthController {
     private final DataSource dataSource;
 
+    String aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = "test";
+
     @GetMapping("/alive")
     public ResponseEntity<String> alive() {
         return ResponseEntity.ok("OK");

@@ -1,12 +1,13 @@
 #!/bin/bash
 set -e
 
-echo "[1/4] Updating system..."
-apt-get update -qq
-apt-get upgrade -y -qq
+echo "[1/5] Updating system..."
+apt-get update -qq || true
+apt-get upgrade -y -qq || true
 
-echo "[2/4] Installing Docker..."
-apt-get install -y -qq ca-certificates curl
+echo "[2/5] Installing Docker and SSH..."
+apt-get install -y -qq ca-certificates curl openssh-server
+
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
   -o /etc/apt/keyrings/docker.asc
@@ -22,18 +23,30 @@ apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plug
 
 systemctl enable docker
 systemctl start docker
+usermod -aG docker admin
 
-echo "[3/4] Creating app user and directories..."
-if ! id "app" &>/dev/null; then
-  useradd -r -s /usr/sbin/nologin app
-fi
-usermod -aG docker app
+echo "[3/5] Enabling SSH password authentication..."
+systemctl enable ssh
+systemctl start ssh
+sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sed -i 's/^#*KbdInteractiveAuthentication.*/KbdInteractiveAuthentication yes/' /etc/ssh/sshd_config
+systemctl restart ssh
+
+echo "[4/5] Configuring sudo and directories..."
+echo "admin ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/admin-nopasswd
+chmod 0440 /etc/sudoers.d/admin-nopasswd
+
+systemctl stop nginx || true
+systemctl disable nginx || true
 
 mkdir -p /opt/mywebapp/nginx
-chown -R app:app /opt/mywebapp
+mkdir -p /home/admin/.docker
+echo '{"auths":{}}' > /home/admin/.docker/config.json
+chown -R admin:admin /opt/mywebapp
+chown -R admin:admin /home/admin/.docker
 
-echo "[4/4] Installing systemd unit..."
-cat <<'EOF' > /etc/systemd/system/mywebapp.service
+echo "[5/5] Installing systemd unit..."
+cat > /etc/systemd/system/mywebapp.service << 'UNIT'
 [Unit]
 Description=MyWebApp Docker Compose Service
 After=docker.service network-online.target
@@ -43,22 +56,22 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-User=app
-Group=app
+User=admin
+Group=admin
 WorkingDirectory=/opt/mywebapp
 
 ExecStart=/usr/bin/docker compose up -d
 ExecStop=/usr/bin/docker compose down
-ExecReload=/usr/bin/docker compose pull && /usr/bin/docker compose up -d
 
 Restart=on-failure
 RestartSec=10s
 
 [Install]
 WantedBy=multi-user.target
-EOF
+UNIT
 
 systemctl daemon-reload
 systemctl enable mywebapp
 
+echo ""
 echo "Setup complete! Target node is ready."

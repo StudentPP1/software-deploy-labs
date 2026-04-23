@@ -213,7 +213,7 @@ jobs:
               || { echo "     FAIL: mywebapp.service is not active"; sudo systemctl status mywebapp; exit 1; }
 
             echo "[2/7] Checking all containers are running..."
-            for container in mariadb_db mywebapp nginx; do
+            for container in mariadb_db mywebapp mywebapp-nginx-1; do
               docker ps --filter "name=${container}" --filter "status=running" | grep -q "${container}" \
                 && echo "     OK: ${container} is running" \
                 || { echo "     FAIL: ${container} is not running"; docker ps -a; exit 1; }

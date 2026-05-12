@@ -1,0 +1,19 @@
+---
+- name: Common setup on all VMs
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Configure database VM
+  hosts: db
+  become: true
+  roles:
+    - db
+
+- name: Deploy application on worker VM
+  hosts: workers
+  become: true
+  roles:
+    - app
+    - nginx

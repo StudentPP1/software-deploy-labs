@@ -1,5 +1,5 @@
 ---
-- name: Create app system user
+- name: Create app system user (runs the application)
   ansible.builtin.user:
     name: app
     system: true
@@ -23,12 +23,7 @@
 - name: Configure operator sudo rules (limited to app service only)
   ansible.builtin.copy:
     content: |
-      operator ALL=(ALL) NOPASSWD: \
-        /bin/systemctl start mywebapp.service, \
-        /bin/systemctl stop mywebapp.service, \
-        /bin/systemctl restart mywebapp.service, \
-        /bin/systemctl status mywebapp.service, \
-        /bin/systemctl reload nginx
+      operator ALL=(ALL) NOPASSWD: /usr/bin/systemctl start mywebapp.service, /usr/bin/systemctl stop mywebapp.service, /usr/bin/systemctl restart mywebapp.service, /usr/bin/systemctl status mywebapp.service, /usr/bin/systemctl reload nginx
     dest: /etc/sudoers.d/operator-rules
     owner: root
     group: root

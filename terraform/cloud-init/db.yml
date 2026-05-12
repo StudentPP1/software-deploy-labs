@@ -8,7 +8,7 @@ users:
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys:
-      - YOUR_SSH_PUBLIC_KEY_HERE
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDErET4g0BkpBGj/LoMQPGjLxs/ul8oSWF1kYCtyG8iYy/id+NMU3VXqoZZ2TeTJWzeV1A4Zjr1tjwZltPNBGUPgyd4vnPlP4vkYIaotIcRIf4Ks/auqrFMGGif7o8E1N1bMrK1J1xc02H/FZECIE1czCyWeRGQKqBzYWzwA7kowQY0f8lphTxtSYAAIFMegxO/cyVeaFtXIshTeIckZowzqOpPT5td9xdPF43kWPJVPC9dpzK5J8ds2jfKsd3mPYP4N5NS2JroguQrixHp3jf1D7CdnLkXEXOVU/l2EBjoLbGkYf3biRPhIDZe9cAETU74dZYIiIw4ln9koYudn4Ny/ZqpxUWa2RSDkmq3WFmYNdK47kx62XoXyzNeS1plc/6ay4eYyJOtmnQ6ykZ+X4wVkpycXIIOiq9FTWBnVYunUembERT5iW19clEUSMkFNS5iFIhYz/8kFE1fbEzvWvVjXGlvy50gEJaMNUUfRgqM5aznOxazi85x6gucV7jycTDYYbJcCK9r32xNKZrjhXNwP3qwZUsHpN7JIrhJW/lmVtm23cilo5NkjQnyk97m/3fv98+YRBxPBRPhdmfpDW3pp1FHbryu8OLrj4uw282PowSlEvmDbxBIf7PkjZgDQGcGC6/9QQic0bJGgdHtnVtUsTViaQ1MJIAob6oI48nZ1w== misha@Nitro5
 
 write_files:
   - path: /etc/netplan/99-hostonly.yaml

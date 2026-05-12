@@ -1,14 +1,7 @@
 output "worker_ip" {
-  description = "Worker VM IP (host-only network)"
-  value       = var.worker_ip
+  value = libvirt_domain.worker.network_interface[0].addresses[0]
 }
 
 output "db_ip" {
-  description = "DB VM IP (host-only network)"
-  value       = var.db_ip
-}
-
-output "ansible_inventory_hint" {
-  description = "Run ansible-playbook with this inventory"
-  value       = "ansible-playbook -i ../ansible/inventory.ini ../ansible/playbook.yml"
+  value = libvirt_domain.db.network_interface[0].addresses[0]
 }

@@ -37,3 +37,10 @@ out/
 
 ### VS Code ###
 .vscode/
+.terraform/
+terraform/.terraform/
+*.tfstate
+*.backup
+*.ova
+*.iso
+*.hcl

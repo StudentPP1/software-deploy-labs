@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "items")
 public class Item {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
